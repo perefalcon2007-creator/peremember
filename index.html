@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEREMEMBER — Remember before you forget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F6F2E9;
+    --surface: #FFFEFB;
+    --ink: #211E19;
+    --muted: #8B8377;
+    --rule: #E5DFD1;
+    --mark-date: #F0C743;
+    --mark-date-ink: #4A3B08;
+    --mark-priority: #E8785A;
+    --mark-priority-ink: #4A1D0D;
+    --mark-high: #E8B25A;
+    --mark-high-ink: #4A2F08;
+    --green: #4F7A5C;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Public Sans', sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif{ font-family: 'Fraunces', serif; }
+  .mono{ font-family: 'IBM Plex Mono', monospace; }
+  .wrap{ max-width: 640px; margin: 0 auto; padding: 0 24px; }
+
+  header{ padding: 48px 24px 10px; text-align:center; position:relative; }
+  .wordmark{ font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+  .tagline{ font-size: 14px; color: var(--muted); font-style: italic; margin-top: 4px; }
+  .kbd-hint{
+    position:absolute; top: 50px; right: 24px; font-size: 11.5px; color: var(--muted);
+    display:flex; align-items:center; gap: 5px;
+  }
+  .kbd-hint kbd{
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; background: var(--surface);
+    border: 1px solid var(--rule); border-radius: 4px; padding: 2px 5px;
+  }
+
+  .composer{ padding: 28px 24px 8px; }
+  .input-shell{
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  input#taskInput{
+    width: 100%; border: none; outline: none; background: transparent;
+    font-family: 'Fraunces', serif; font-size: 19px; color: var(--ink);
+  }
+  input#taskInput::placeholder{ color: #B9B2A2; }
+
+  .preview-line{
+    min-height: 22px; margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed var(--rule);
+    font-size: 15px; color: var(--muted); display:none;
+  }
+  .preview-line.show{ display:block; }
+  mark.date{ background: var(--mark-date); color: var(--mark-date-ink); padding: 1px 3px; border-radius: 3px; }
+  mark.priority{ background: var(--mark-priority); color: var(--mark-priority-ink); padding: 1px 3px; border-radius: 3px; }
+  mark.high{ background: var(--mark-high); color: var(--mark-high-ink); padding: 1px 3px; border-radius: 3px; }
+
+  .chips{ display:flex; gap: 8px; margin-top: 14px; flex-wrap:wrap; }
+  .chip{
+    font-size: 12px; padding: 5px 11px; border-radius: 20px;
+    display:flex; align-items:center; gap: 6px;
+  }
+  .chip .k{ color: var(--muted); }
+  .chip.due{ background: #FBF0CB; color: var(--mark-date-ink); }
+  .chip.pr-urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
+  .chip.pr-high{ background: #F7E2C0; color: var(--mark-high-ink); }
+  .chip.pr-normal{ background: #E9E4D6; color: var(--muted); }
+
+  .hint-row{ display:flex; justify-content:space-between; align-items:center; margin-top: 16px; }
+  .hint{ font-size: 12.5px; color: var(--muted); }
+  .hint b{ color: var(--ink); font-weight: 500; }
+  button#addBtn{
+    background: var(--ink); color: var(--paper); border: none;
+    font-size: 13.5px; font-weight: 500; padding: 10px 20px; border-radius: 8px;
+    cursor: pointer; font-family: inherit;
+  }
+  button#addBtn:hover{ opacity: 0.9; }
+  button#addBtn:disabled{ opacity: 0.35; cursor: default; }
+
+  .filter-row{
+    display:flex; gap: 8px; padding: 22px 24px 0; flex-wrap: wrap;
+  }
+  .filter-btn{
+    font-size: 12.5px; padding: 6px 13px; border-radius: 20px; border: 1px solid var(--rule);
+    background: var(--surface); color: var(--muted); cursor:pointer; font-family: inherit;
+  }
+  .filter-btn.active{ background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .board{ padding: 20px 24px 90px; }
+  .group{ margin-bottom: 6px; }
+  .group-label{
+    font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted);
+    margin: 26px 0 10px; font-family: 'IBM Plex Mono', monospace;
+  }
+  .group:first-child .group-label{ margin-top: 0; }
+
+  .task-row{
+    display:flex; align-items:center; gap: 14px;
+    padding: 14px 4px; border-bottom: 1px solid var(--rule);
+  }
+  .check{
+    width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid #C9C1AE;
+    flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    background: var(--surface);
+  }
+  .check.done{ background: var(--green); border-color: var(--green); }
+  .check.done::after{ content:'✓'; color: var(--surface); font-size: 11px; }
+  .task-title{ flex:1; font-size: 15.5px; cursor: text; }
+  .task-title.done{ text-decoration: line-through; color: var(--muted); }
+  .task-title-edit{
+    flex:1; font-size: 15.5px; font-family: inherit; border: none; outline: none;
+    background: var(--surface); border-bottom: 1px solid var(--green); padding: 2px 0;
+  }
+  .task-meta{ display:flex; gap: 8px; align-items:center; flex-shrink:0; }
+  .badge{ font-size: 11px; padding: 3px 9px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; }
+  .badge.urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
+  .badge.high{ background: #F7E2C0; color: var(--mark-high-ink); }
+  .del{
+    background:none; border:none; color: var(--muted); font-size: 16px;
+    cursor:pointer; opacity: 0; transition: opacity 0.15s; padding: 4px;
+  }
+  .task-row:hover .del{ opacity: 1; }
+
+  .empty{ text-align:center; padding: 40px 20px; color: var(--muted); }
+  .empty .serif{ font-size: 17px; color: var(--ink); margin-bottom: 6px; }
+  .empty p{ font-size: 13.5px; }
+
+  .toast{
+    position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper); font-size: 13.5px;
+    padding: 12px 18px; border-radius: 8px; display:flex; align-items:center; gap: 14px;
+    opacity: 0; pointer-events:none; transition: all 0.25s ease;
+  }
+  .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); pointer-events:auto; }
+  .toast button{ background:none; border:none; color: var(--mark-date); font-weight:600; font-size:13px; cursor:pointer; font-family: inherit; }
+
+  @media (max-width: 480px){
+    .task-meta{ flex-direction: column-reverse; align-items: flex-end; gap: 4px; }
+    .kbd-hint{ display:none; }
+  }
+  :focus-visible{ outline: 2px solid var(--green); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark serif">Peremember</div>
+  <div class="tagline serif">Remember before you forget.</div>
+  <div class="kbd-hint"><kbd>⌘</kbd><kbd>K</kbd> quick add</div>
+</header>
+
+<div class="wrap">
+  <div class="composer">
+    <div class="input-shell">
+      <input id="taskInput" type="text" placeholder="finish client deck before Thursday, it's urgent" autocomplete="off">
+      <div class="preview-line mono" id="previewLine"></div>
+      <div class="chips" id="chips"></div>
+      <div class="hint-row">
+        <div class="hint">Press <b>Enter</b> to save</div>
+        <button id="addBtn" disabled>Add task</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Urgent">Urgent</button>
+    <button class="filter-btn" data-filter="High">High</button>
+    <button class="filter-btn" data-filter="Normal">Normal</button>
+  </div>
+
+  <div class="board" id="board"></div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastMsg">Task deleted</span>
+  <button id="undoBtn">Undo</button>
+</div>
+
+<script>
+(function(){
+  var DAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
+  function startOfDay(d){ var x = new Date(d); x.setHours(0,0,0,0); return x; }
+
+  function nextWeekday(fromDate, targetDow, hour, minute){
+    var d = startOfDay(fromDate);
+    var diff = (targetDow - d.getDay() + 7) % 7;
+    if(diff === 0) diff = 7;
+    d.setDate(d.getDate() + diff);
+    d.setHours(hour, minute, 0, 0);
+    return d;
+  }
+
+  function to12h(h, m){
+    var period = h >= 12 ? 'PM' : 'AM';
+    var hh = h % 12; if(hh === 0) hh = 12;
+    var mm = m < 10 ? '0' + m : '' + m;
+    return hh + ':' + mm + ' ' + period;
+  }
+
+  function parseTask(raw){
+    var text = raw.trim();
+    var now = new Date();
+    var matches = [];
+    var priority = 'Normal';
+    var dueDate = null;
+    var dueLabel = null;
+    var explicitTime = null;
+
+    var timeRe = /\bby\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i;
+    var tm = timeRe.exec(text);
+    if(tm){
+      var h = parseInt(tm[1], 10);
+      var min = tm[2] ? parseInt(tm[2], 10) : 0;
+      var period = tm[3] ? tm[3].toLowerCase() : null;
+      if(period === 'pm' && h < 12) h += 12;
+      if(period === 'am' && h === 12) h = 0;
+      if(!period && h < 8) h += 12;
+      explicitTime = { h: h, m: min };
+      matches.push({start:tm.index, end:tm.index+tm[0].length, cls:'date'});
+    }
+
+    var urgentRe = /\b(urgent|asap)\b/i;
+    var highRe = /\b(important|high priority|high)\b/i;
+    var m = urgentRe.exec(text);
+    if(m){ priority = 'Urgent'; matches.push({start:m.index, end:m.index+m[0].length, cls:'priority'}); }
+    else{
+      m = highRe.exec(text);
+      if(m){ priority = 'High'; matches.push({start:m.index, end:m.index+m[0].length, cls:'high'}); }
+    }
+
+    var beforeDayRe = /\bbefore\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+    var onDayRe = /\b(?:on\s+|next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+    var tomorrowRe = /\btomorrow\b/i;
+    var todayRe = /\btoday\b/i;
+
+    var dm = beforeDayRe.exec(text);
+    if(dm){
+      var dow = DAYS.indexOf(dm[1].toLowerCase());
+      var hh1 = explicitTime ? explicitTime.h : 9, mm1 = explicitTime ? explicitTime.m : 0;
+      dueDate = nextWeekday(now, dow, hh1, mm1);
+      dueLabel = 'Before ' + cap(dm[1]) + ', ' + to12h(hh1, mm1);
+      matches.push({start:dm.index, end:dm.index+dm[0].length, cls:'date'});
+    } else if((dm = tomorrowRe.exec(text))){
+      var hh2 = explicitTime ? explicitTime.h : 17, mm2 = explicitTime ? explicitTime.m : 0;
+      var t = startOfDay(now); t.setDate(t.getDate()+1); t.setHours(hh2, mm2, 0, 0);
+      dueDate = t; dueLabel = 'Tomorrow, ' + to12h(hh2, mm2);
+      matches.push({start:dm.index, end:dm.index+dm[0].length, cls:'date'});
+    } else if((dm = todayRe.exec(text))){
+      var hh3 = explicitTime ? explicitTime.h : 17, mm3 = explicitTime ? explicitTime.m : 0;
+      var t2 = startOfDay(now); t2.setHours(hh3, mm3, 0, 0);
+      dueDate = t2; dueLabel = 'Today, ' + to12h(hh3, mm3);
+      matches.push({start:dm.index, end:dm.index+dm[0].length, cls:'date'});
+    } else if((dm = onDayRe.exec(text))){
+      var dow2 = DAYS.indexOf(dm[1].toLowerCase());
+      var hh4 = explicitTime ? explicitTime.h : 17, mm4 = explicitTime ? explicitTime.m : 0;
+      dueDate = nextWeekday(now, dow2, hh4, mm4);
+      dueLabel = cap(dm[1]) + ', ' + to12h(hh4, mm4);
+      matches.push({start:dm.index, end:dm.index+dm[0].length, cls:'date'});
+    } else if(explicitTime){
+      var hh5 = explicitTime.h, mm5 = explicitTime.m;
+      var t3 = startOfDay(now); t3.setHours(hh5, mm5, 0, 0);
+      if(t3.getTime() < now.getTime()) t3.setDate(t3.getDate()+1);
+      dueDate = t3; dueLabel = 'Today, ' + to12h(hh5, mm5);
+    }
+
+    matches.sort(function(a,b){ return a.start - b.start; });
+    var cleanChars = text.split('');
+    matches.forEach(function(mm){
+      for(var i=mm.start;i<mm.end;i++) cleanChars[i] = '\u0000';
+    });
+    var title = cleanChars.join('')
+      .replace(/\u0000/g,' ')
+      .replace(/,/g,' ')
+      .replace(/\s{2,}/g,' ')
+      .replace(/^\s+|\s+$/g,'')
+      .replace(/\s+([.!?])$/,'$1');
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+
+    return { title: title, due: dueLabel, dueDate: dueDate ? dueDate.toISOString() : null, priority: priority, matches: matches, rawText: text };
+  }
+
+  function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function highlightHTML(text, matches){
+    if(matches.length === 0) return escapeHTML(text);
+    var out = ''; var last = 0;
+    matches.forEach(function(m){
+      out += escapeHTML(text.slice(last, m.start));
+      out += '<mark class="' + m.cls + '">' + escapeHTML(text.slice(m.start, m.end)) + '</mark>';
+      last = m.end;
+    });
+    out += escapeHTML(text.slice(last));
+    return out;
+  }
+
+  function escapeHTML(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  var STORAGE_KEY = 'peremember_tasks_v2';
+  function loadTasks(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }catch(e){ return []; }
+  }
+  function saveTasks(tasks){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  var input = document.getElementById('taskInput');
+  var previewLine = document.getElementById('previewLine');
+  var chipsEl = document.getElementById('chips');
+  var addBtn = document.getElementById('addBtn');
+  var board = document.getElementById('board');
+  var toast = document.getElementById('toast');
+  var toastMsg = document.getElementById('toastMsg');
+  var undoBtn = document.getElementById('undoBtn');
+  var filterRow = document.getElementById('filterRow');
+  var lastDeleted = null;
+  var toastTimer = null;
+  var currentFilter = 'all';
+
+  var tasks = loadTasks();
+
+  function updatePreview(){
+    var val = input.value;
+    if(!val.trim()){
+      previewLine.classList.remove('show');
+      chipsEl.innerHTML = '';
+      addBtn.disabled = true;
+      return;
+    }
+    var parsed = parseTask(val);
+    previewLine.innerHTML = highlightHTML(parsed.rawText, parsed.matches);
+    previewLine.classList.add('show');
+    addBtn.disabled = false;
+
+    var chips = '';
+    if(parsed.due){
+      chips += '<span class="chip due"><span class="k">Due</span> ' + escapeHTML(parsed.due) + '</span>';
+    }
+    var prClass = parsed.priority === 'Urgent' ? 'pr-urgent' : (parsed.priority === 'High' ? 'pr-high' : 'pr-normal');
+    chips += '<span class="chip ' + prClass + '"><span class="k">Priority</span> ' + parsed.priority + '</span>';
+    chipsEl.innerHTML = chips;
+  }
+
+  function addTask(){
+    var val = input.value.trim();
+    if(!val) return;
+    var parsed = parseTask(val);
+    tasks.unshift({
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      title: parsed.title || val,
+      due: parsed.due,
+      dueDate: parsed.dueDate,
+      priority: parsed.priority,
+      completed: false,
+      createdAt: new Date().toISOString()
+    });
+    saveTasks(tasks);
+    input.value = '';
+    updatePreview();
+    renderBoard();
+    input.focus();
+  }
+
+  function groupLabelFor(task){
+    if(!task.dueDate) return 'No date';
+    var d = startOfDay(new Date(task.dueDate));
+    var today = startOfDay(new Date());
+    var tmw = new Date(today); tmw.setDate(tmw.getDate()+1);
+    var weekOut = new Date(today); weekOut.setDate(weekOut.getDate()+7);
+    if(d.getTime() === today.getTime()) return 'Today';
+    if(d.getTime() === tmw.getTime()) return 'Tomorrow';
+    if(d.getTime() < weekOut.getTime()) return 'This week';
+    return 'Later';
+  }
+
+  function renderBoard(){
+    var active = currentFilter === 'all' ? tasks : tasks.filter(function(t){ return t.priority === currentFilter; });
+    if(active.length === 0){
+      var msg = currentFilter === 'all'
+        ? '<div class="empty"><div class="serif">Nothing yet.</div><p>Type the first thing you don\u2019t want to forget.</p></div>'
+        : '<div class="empty"><div class="serif">No ' + currentFilter.toLowerCase() + ' tasks.</div><p>Switch filters or add a new one.</p></div>';
+      board.innerHTML = msg;
+      return;
+    }
+    var order = ['Today','Tomorrow','This week','Later','No date'];
+    var groups = {};
+    active.forEach(function(t){
+      var g = groupLabelFor(t);
+      groups[g] = groups[g] || [];
+      groups[g].push(t);
+    });
+    var html = '';
+    order.forEach(function(g){
+      if(!groups[g]) return;
+      html += '<div class="group"><div class="group-label">' + g.toUpperCase() + ' \u00b7 ' + groups[g].length + '</div>';
+      groups[g].forEach(function(t){
+        var badge = '';
+        if(t.priority === 'Urgent') badge = '<span class="badge urgent">urgent</span>';
+        else if(t.priority === 'High') badge = '<span class="badge high">high</span>';
+        html += '<div class="task-row" data-id="' + t.id + '">' +
+          '<div class="check' + (t.completed ? ' done' : '') + '" data-action="toggle"></div>' +
+          '<div class="task-title' + (t.completed ? ' done' : '') + '" data-action="edit">' + escapeHTML(t.title) + '</div>' +
+          '<div class="task-meta">' + badge + '<button class="del" data-action="delete" aria-label="Delete task">\u00d7</button></div>' +
+        '</div>';
+      });
+      html += '</div>';
+    });
+    board.innerHTML = html;
+  }
+
+  board.addEventListener('click', function(e){
+    var actionEl = e.target.closest('[data-action]');
+    if(!actionEl) return;
+    var row = e.target.closest('.task-row');
+    var id = row.getAttribute('data-id');
+    var action = actionEl.getAttribute('data-action');
+    var idx = tasks.findIndex(function(t){ return t.id === id; });
+    if(idx === -1) return;
+
+    if(action === 'toggle'){
+      tasks[idx].completed = !tasks[idx].completed;
+      saveTasks(tasks);
+      renderBoard();
+    } else if(action === 'delete'){
+      lastDeleted = { task: tasks[idx], index: idx };
+      tasks.splice(idx, 1);
+      saveTasks(tasks);
+      renderBoard();
+      showToast('Task deleted');
+    } else if(action === 'edit'){
+      if(actionEl.querySelector('input')) return;
+      var currentTitle = tasks[idx].title;
+      var editInput = document.createElement('input');
+      editInput.className = 'task-title-edit';
+      editInput.value = currentTitle;
+      actionEl.replaceWith(editInput);
+      editInput.focus();
+      editInput.setSelectionRange(editInput.value.length, editInput.value.length);
+
+      function commit(){
+        var newVal = editInput.value.trim();
+        tasks[idx].title = newVal || currentTitle;
+        saveTasks(tasks);
+        renderBoard();
+      }
+      editInput.addEventListener('blur', commit);
+      editInput.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter'){ editInput.blur(); }
+        if(ev.key === 'Escape'){ editInput.value = currentTitle; editInput.blur(); }
+      });
+    }
+  });
+
+  filterRow.addEventListener('click', function(e){
+    var btn = e.target.closest('.filter-btn');
+    if(!btn) return;
+    currentFilter = btn.getAttribute('data-filter');
+    Array.prototype.forEach.call(filterRow.querySelectorAll('.filter-btn'), function(b){
+      b.classList.toggle('active', b === btn);
+    });
+    renderBoard();
+  });
+
+  function showToast(msg){
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 4500);
+  }
+
+  undoBtn.addEventListener('click', function(){
+    if(!lastDeleted) return;
+    tasks.splice(lastDeleted.index, 0, lastDeleted.task);
+    saveTasks(tasks);
+    renderBoard();
+    toast.classList.remove('show');
+    lastDeleted = null;
+  });
+
+  input.addEventListener('input', updatePreview);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') addTask();
+  });
+  addBtn.addEventListener('click', addTask);
+
+  document.addEventListener('keydown', function(e){
+    if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){
+      e.preventDefault();
+      input.focus();
+    }
+  });
+
+  renderBoard();
+})();
+</script>
+
+</body>
+</html>
