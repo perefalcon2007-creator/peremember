@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PEREMEMBER — Remember before you forget</title>
+<title>Peremember — Remember before you forget</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --paper: #F6F2E9;
@@ -20,6 +21,7 @@
     --mark-high: #E8B25A;
     --mark-high-ink: #4A2F08;
     --green: #4F7A5C;
+    --red: #C1523B;
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
   body{
@@ -32,19 +34,62 @@
   .serif{ font-family: 'Fraunces', serif; }
   .mono{ font-family: 'IBM Plex Mono', monospace; }
   .wrap{ max-width: 640px; margin: 0 auto; padding: 0 24px; }
+  .hidden{ display:none !important; }
 
   header{ padding: 48px 24px 10px; text-align:center; position:relative; }
   .wordmark{ font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
   .tagline{ font-size: 14px; color: var(--muted); font-style: italic; margin-top: 4px; }
-  .kbd-hint{
-    position:absolute; top: 50px; right: 24px; font-size: 11.5px; color: var(--muted);
-    display:flex; align-items:center; gap: 5px;
+  .top-right{
+    position:absolute; top: 50px; right: 24px; font-size: 12px; color: var(--muted);
+    display:flex; align-items:center; gap: 10px;
   }
+  .kbd-hint{ display:flex; align-items:center; gap: 5px; }
   .kbd-hint kbd{
     font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; background: var(--surface);
     border: 1px solid var(--rule); border-radius: 4px; padding: 2px 5px;
   }
+  #signOutBtn{
+    background:none; border: 1px solid var(--rule); color: var(--muted); font-size: 12px;
+    padding: 5px 11px; border-radius: 20px; cursor:pointer; font-family: inherit;
+  }
+  #signOutBtn:hover{ border-color: var(--ink); color: var(--ink); }
 
+  /* AUTH SCREEN */
+  .auth-shell{ max-width: 380px; margin: 60px auto; padding: 0 24px; }
+  .auth-card{
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 28px 26px;
+  }
+  .auth-title{ font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .auth-sub{ font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
+  .field-label{ font-size: 12.5px; color: var(--muted); margin-bottom: 6px; display:block; }
+  .field{
+    width: 100%; border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px;
+    font-family: inherit; font-size: 14.5px; background: var(--paper); margin-bottom: 14px; outline: none;
+  }
+  .field:focus{ border-color: var(--green); }
+  .auth-btn{
+    width: 100%; background: var(--ink); color: var(--paper); border: none;
+    font-size: 14px; font-weight: 500; padding: 11px; border-radius: 8px;
+    cursor: pointer; font-family: inherit; margin-top: 4px;
+  }
+  .auth-btn:hover{ opacity: 0.9; }
+  .auth-btn:disabled{ opacity: 0.5; cursor: default; }
+  .auth-switch{ text-align:center; font-size: 13px; color: var(--muted); margin-top: 16px; }
+  .auth-switch button{
+    background:none; border:none; color: var(--green); font-weight: 500; cursor:pointer;
+    font-family: inherit; font-size: 13px; padding: 0;
+  }
+  .auth-error{
+    background: #FBE6E1; color: var(--red); font-size: 12.5px; padding: 9px 12px;
+    border-radius: 6px; margin-bottom: 14px;
+  }
+  .auth-note{
+    background: #FBF0CB; color: var(--mark-date-ink); font-size: 12.5px; padding: 9px 12px;
+    border-radius: 6px; margin-bottom: 14px;
+  }
+
+  /* APP */
   .composer{ padding: 28px 24px 8px; }
   .input-shell{
     background: var(--surface);
@@ -69,10 +114,7 @@
   mark.high{ background: var(--mark-high); color: var(--mark-high-ink); padding: 1px 3px; border-radius: 3px; }
 
   .chips{ display:flex; gap: 8px; margin-top: 14px; flex-wrap:wrap; }
-  .chip{
-    font-size: 12px; padding: 5px 11px; border-radius: 20px;
-    display:flex; align-items:center; gap: 6px;
-  }
+  .chip{ font-size: 12px; padding: 5px 11px; border-radius: 20px; display:flex; align-items:center; gap: 6px; }
   .chip .k{ color: var(--muted); }
   .chip.due{ background: #FBF0CB; color: var(--mark-date-ink); }
   .chip.pr-urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
@@ -90,9 +132,7 @@
   button#addBtn:hover{ opacity: 0.9; }
   button#addBtn:disabled{ opacity: 0.35; cursor: default; }
 
-  .filter-row{
-    display:flex; gap: 8px; padding: 22px 24px 0; flex-wrap: wrap;
-  }
+  .filter-row{ display:flex; gap: 8px; padding: 22px 24px 0; flex-wrap: wrap; }
   .filter-btn{
     font-size: 12.5px; padding: 6px 13px; border-radius: 20px; border: 1px solid var(--rule);
     background: var(--surface); color: var(--muted); cursor:pointer; font-family: inherit;
@@ -107,10 +147,7 @@
   }
   .group:first-child .group-label{ margin-top: 0; }
 
-  .task-row{
-    display:flex; align-items:center; gap: 14px;
-    padding: 14px 4px; border-bottom: 1px solid var(--rule);
-  }
+  .task-row{ display:flex; align-items:center; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--rule); }
   .check{
     width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid #C9C1AE;
     flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
@@ -159,10 +196,31 @@
 <header>
   <div class="wordmark serif">Peremember</div>
   <div class="tagline serif">Remember before you forget.</div>
-  <div class="kbd-hint"><kbd>⌘</kbd><kbd>K</kbd> quick add</div>
+  <div class="top-right hidden" id="topRight">
+    <span class="kbd-hint"><kbd>⌘</kbd><kbd>K</kbd> quick add</span>
+    <button id="signOutBtn">Sign out</button>
+  </div>
 </header>
 
-<div class="wrap">
+<div id="authScreen" class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-title serif" id="authTitle">Welcome back</div>
+    <div class="auth-sub" id="authSub">Sign in to see your tasks.</div>
+    <div id="authError" class="auth-error hidden"></div>
+    <div id="authNote" class="auth-note hidden"></div>
+    <label class="field-label">Email</label>
+    <input id="authEmail" class="field" type="email" placeholder="you@example.com" autocomplete="email">
+    <label class="field-label">Password</label>
+    <input id="authPassword" class="field" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+    <button id="authSubmit" class="auth-btn">Sign in</button>
+    <div class="auth-switch">
+      <span id="authSwitchText">Don't have an account?</span>
+      <button id="authSwitchBtn">Sign up</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
   <div class="composer">
     <div class="input-shell">
       <input id="taskInput" type="text" placeholder="finish client deck before Thursday, it's urgent" autocomplete="off">
@@ -192,10 +250,12 @@
 
 <script>
 (function(){
+  var SUPABASE_URL = 'https://hztmvvdamlbltimtetkz.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_vaGpd2a6v9GECEYsknlu2g_32YBehai';
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   var DAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-
   function startOfDay(d){ var x = new Date(d); x.setHours(0,0,0,0); return x; }
-
   function nextWeekday(fromDate, targetDow, hour, minute){
     var d = startOfDay(fromDate);
     var diff = (targetDow - d.getDay() + 7) % 7;
@@ -204,13 +264,13 @@
     d.setHours(hour, minute, 0, 0);
     return d;
   }
-
   function to12h(h, m){
     var period = h >= 12 ? 'PM' : 'AM';
     var hh = h % 12; if(hh === 0) hh = 12;
     var mm = m < 10 ? '0' + m : '' + m;
     return hh + ':' + mm + ' ' + period;
   }
+  function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
   function parseTask(raw){
     var text = raw.trim();
@@ -294,8 +354,6 @@
     return { title: title, due: dueLabel, dueDate: dueDate ? dueDate.toISOString() : null, priority: priority, matches: matches, rawText: text };
   }
 
-  function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
   function highlightHTML(text, matches){
     if(matches.length === 0) return escapeHTML(text);
     var out = ''; var last = 0;
@@ -307,18 +365,81 @@
     out += escapeHTML(text.slice(last));
     return out;
   }
+  function escapeHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  function escapeHTML(s){
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
+  var authScreen = document.getElementById('authScreen');
+  var appEl = document.getElementById('app');
+  var topRight = document.getElementById('topRight');
+  var authTitle = document.getElementById('authTitle');
+  var authSub = document.getElementById('authSub');
+  var authEmail = document.getElementById('authEmail');
+  var authPassword = document.getElementById('authPassword');
+  var authSubmit = document.getElementById('authSubmit');
+  var authError = document.getElementById('authError');
+  var authNote = document.getElementById('authNote');
+  var authSwitchText = document.getElementById('authSwitchText');
+  var authSwitchBtn = document.getElementById('authSwitchBtn');
+  var signOutBtn = document.getElementById('signOutBtn');
+  var mode = 'signin';
 
-  var STORAGE_KEY = 'peremember_tasks_v2';
-  function loadTasks(){
-    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }catch(e){ return []; }
+  function setMode(m){
+    mode = m;
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    if(m === 'signin'){
+      authTitle.textContent = 'Welcome back';
+      authSub.textContent = 'Sign in to see your tasks.';
+      authSubmit.textContent = 'Sign in';
+      authSwitchText.textContent = "Don't have an account?";
+      authSwitchBtn.textContent = 'Sign up';
+    } else {
+      authTitle.textContent = 'Create your account';
+      authSub.textContent = 'Takes about ten seconds.';
+      authSubmit.textContent = 'Sign up';
+      authSwitchText.textContent = 'Already have an account?';
+      authSwitchBtn.textContent = 'Sign in';
+    }
   }
-  function saveTasks(tasks){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }
+  authSwitchBtn.addEventListener('click', function(){ setMode(mode === 'signin' ? 'signup' : 'signin'); });
+
+  authSubmit.addEventListener('click', async function(){
+    var email = authEmail.value.trim();
+    var password = authPassword.value;
+    authError.classList.add('hidden');
+    authNote.classList.add('hidden');
+    if(!email || !password){
+      authError.textContent = 'Enter both email and password.';
+      authError.classList.remove('hidden');
+      return;
+    }
+    authSubmit.disabled = true;
+    try{
+      if(mode === 'signin'){
+        var res = await supabase.auth.signInWithPassword({ email: email, password: password });
+        if(res.error) throw res.error;
+      } else {
+        var res2 = await supabase.auth.signUp({ email: email, password: password });
+        if(res2.error) throw res2.error;
+        if(res2.data && res2.data.user && !res2.data.session){
+          authNote.textContent = 'Check your email to confirm your account, then sign in.';
+          authNote.classList.remove('hidden');
+          setMode('signin');
+        }
+      }
+    } catch(err){
+      authError.textContent = err.message || 'Something went wrong.';
+      authError.classList.remove('hidden');
+    }
+    authSubmit.disabled = false;
+  });
+
+  [authEmail, authPassword].forEach(function(el){
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter') authSubmit.click(); });
+  });
+
+  signOutBtn.addEventListener('click', async function(){
+    await supabase.auth.signOut();
+  });
 
   var input = document.getElementById('taskInput');
   var previewLine = document.getElementById('previewLine');
@@ -332,8 +453,8 @@
   var lastDeleted = null;
   var toastTimer = null;
   var currentFilter = 'all';
-
-  var tasks = loadTasks();
+  var tasks = [];
+  var currentUserId = null;
 
   function updatePreview(){
     var val = input.value;
@@ -347,7 +468,6 @@
     previewLine.innerHTML = highlightHTML(parsed.rawText, parsed.matches);
     previewLine.classList.add('show');
     addBtn.disabled = false;
-
     var chips = '';
     if(parsed.due){
       chips += '<span class="chip due"><span class="k">Due</span> ' + escapeHTML(parsed.due) + '</span>';
@@ -357,20 +477,28 @@
     chipsEl.innerHTML = chips;
   }
 
-  function addTask(){
+  async function fetchTasks(){
+    var res = await supabase.from('tasks').select('*').order('created_at', { ascending: false });
+    if(res.error){ console.error(res.error); return; }
+    tasks = res.data || [];
+    renderBoard();
+  }
+
+  async function addTask(){
     var val = input.value.trim();
-    if(!val) return;
+    if(!val || !currentUserId) return;
     var parsed = parseTask(val);
-    tasks.unshift({
-      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    addBtn.disabled = true;
+    var res = await supabase.from('tasks').insert({
+      user_id: currentUserId,
       title: parsed.title || val,
       due: parsed.due,
-      dueDate: parsed.dueDate,
+      due_date: parsed.dueDate,
       priority: parsed.priority,
-      completed: false,
-      createdAt: new Date().toISOString()
-    });
-    saveTasks(tasks);
+      completed: false
+    }).select();
+    if(res.error){ console.error(res.error); addBtn.disabled = false; return; }
+    tasks.unshift(res.data[0]);
     input.value = '';
     updatePreview();
     renderBoard();
@@ -378,8 +506,8 @@
   }
 
   function groupLabelFor(task){
-    if(!task.dueDate) return 'No date';
-    var d = startOfDay(new Date(task.dueDate));
+    if(!task.due_date) return 'No date';
+    var d = startOfDay(new Date(task.due_date));
     var today = startOfDay(new Date());
     var tmw = new Date(today); tmw.setDate(tmw.getDate()+1);
     var weekOut = new Date(today); weekOut.setDate(weekOut.getDate()+7);
@@ -424,25 +552,26 @@
     board.innerHTML = html;
   }
 
-  board.addEventListener('click', function(e){
+  board.addEventListener('click', async function(e){
     var actionEl = e.target.closest('[data-action]');
     if(!actionEl) return;
     var row = e.target.closest('.task-row');
     var id = row.getAttribute('data-id');
     var action = actionEl.getAttribute('data-action');
-    var idx = tasks.findIndex(function(t){ return t.id === id; });
+    var idx = tasks.findIndex(function(t){ return String(t.id) === id; });
     if(idx === -1) return;
 
     if(action === 'toggle'){
-      tasks[idx].completed = !tasks[idx].completed;
-      saveTasks(tasks);
+      var newVal = !tasks[idx].completed;
+      tasks[idx].completed = newVal;
       renderBoard();
+      await supabase.from('tasks').update({ completed: newVal }).eq('id', id);
     } else if(action === 'delete'){
       lastDeleted = { task: tasks[idx], index: idx };
       tasks.splice(idx, 1);
-      saveTasks(tasks);
       renderBoard();
       showToast('Task deleted');
+      await supabase.from('tasks').delete().eq('id', id);
     } else if(action === 'edit'){
       if(actionEl.querySelector('input')) return;
       var currentTitle = tasks[idx].title;
@@ -454,10 +583,10 @@
       editInput.setSelectionRange(editInput.value.length, editInput.value.length);
 
       function commit(){
-        var newVal = editInput.value.trim();
-        tasks[idx].title = newVal || currentTitle;
-        saveTasks(tasks);
+        var newTitle = editInput.value.trim();
+        tasks[idx].title = newTitle || currentTitle;
         renderBoard();
+        supabase.from('tasks').update({ title: tasks[idx].title }).eq('id', id);
       }
       editInput.addEventListener('blur', commit);
       editInput.addEventListener('keydown', function(ev){
@@ -484,29 +613,50 @@
     toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 4500);
   }
 
-  undoBtn.addEventListener('click', function(){
+  undoBtn.addEventListener('click', async function(){
     if(!lastDeleted) return;
-    tasks.splice(lastDeleted.index, 0, lastDeleted.task);
-    saveTasks(tasks);
-    renderBoard();
+    var t = lastDeleted.task;
+    var res = await supabase.from('tasks').insert({
+      user_id: t.user_id, title: t.title, due: t.due, due_date: t.due_date,
+      priority: t.priority, completed: t.completed
+    }).select();
+    if(!res.error){
+      tasks.splice(lastDeleted.index, 0, res.data[0]);
+      renderBoard();
+    }
     toast.classList.remove('show');
     lastDeleted = null;
   });
 
   input.addEventListener('input', updatePreview);
-  input.addEventListener('keydown', function(e){
-    if(e.key === 'Enter') addTask();
-  });
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') addTask(); });
   addBtn.addEventListener('click', addTask);
-
   document.addEventListener('keydown', function(e){
     if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){
       e.preventDefault();
-      input.focus();
+      if(!appEl.classList.contains('hidden')) input.focus();
     }
   });
 
-  renderBoard();
+  supabase.auth.onAuthStateChange(function(event, session){
+    if(session && session.user){
+      currentUserId = session.user.id;
+      authScreen.classList.add('hidden');
+      appEl.classList.remove('hidden');
+      topRight.classList.remove('hidden');
+      fetchTasks();
+    } else {
+      currentUserId = null;
+      tasks = [];
+      authScreen.classList.remove('hidden');
+      appEl.classList.add('hidden');
+      topRight.classList.add('hidden');
+      authEmail.value = '';
+      authPassword.value = '';
+    }
+  });
+
+  setMode('signin');
 })();
 </script>
 
