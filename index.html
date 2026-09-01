@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peremember — Remember before you forget</title>
+<meta name="theme-color" content="#211E19">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,17 +44,18 @@
     display:flex; align-items:center; gap: 10px;
   }
   .kbd-hint{ display:flex; align-items:center; gap: 5px; }
-  .kbd-hint kbd{
-    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; background: var(--surface);
-    border: 1px solid var(--rule); border-radius: 4px; padding: 2px 5px;
-  }
-  #signOutBtn{
+  #signOutBtn, #notifyBtn{
     background:none; border: 1px solid var(--rule); color: var(--muted); font-size: 12px;
     padding: 5px 11px; border-radius: 20px; cursor:pointer; font-family: inherit;
   }
+  #notifyBtn.on{ background: var(--ink); color: var(--paper); border-color: var(--ink); }
   #signOutBtn:hover{ border-color: var(--ink); color: var(--ink); }
+  .live-dot{
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green); display:inline-block;
+    margin-right: 5px; box-shadow: 0 0 0 0 rgba(79,122,94,0.5); animation: livepulse 2s infinite;
+  }
+  @keyframes livepulse{ 0%{ box-shadow: 0 0 0 0 rgba(79,122,94,0.4); } 70%{ box-shadow: 0 0 0 6px rgba(79,122,94,0); } 100%{ box-shadow: 0 0 0 0 rgba(79,122,94,0); } }
 
-  /* AUTH */
   .auth-shell{ max-width: 380px; margin: 60px auto; padding: 0 24px; }
   .auth-card{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 28px 26px; }
   .auth-title{ font-size: 20px; font-weight: 600; margin-bottom: 6px; }
@@ -73,7 +77,6 @@
   .auth-error{ background: #FBE6E1; color: var(--red); font-size: 12.5px; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; }
   .auth-note{ background: #FBF0CB; color: var(--mark-date-ink); font-size: 12.5px; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; }
 
-  /* STATS BAR */
   .stats{
     display:grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
     background: var(--rule); border: 1px solid var(--rule); border-radius: 12px;
@@ -84,7 +87,6 @@
   .stat-num.streak{ color: var(--mark-priority-ink); }
   .stat-label{ font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; margin-top: 2px; text-transform: uppercase; }
 
-  /* COMPOSER */
   .composer{ padding: 22px 24px 8px; }
   .input-shell{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; }
   input#taskInput{
@@ -116,7 +118,6 @@
   }
   button#addBtn:disabled{ opacity: 0.35; cursor: default; }
 
-  /* CONTROLS ROW: search + view toggle + filters */
   .controls{ padding: 22px 24px 0; display:flex; flex-direction:column; gap: 12px; }
   .controls-top{ display:flex; gap: 10px; align-items:center; }
   .search-shell{
@@ -139,7 +140,6 @@
   }
   .filter-btn.active{ background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-  /* LIST VIEW */
   .board{ padding: 20px 24px 90px; }
   .group{ margin-bottom: 6px; }
   .group-label{ font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted); margin: 26px 0 10px; font-family: 'IBM Plex Mono', monospace; }
@@ -173,7 +173,6 @@
   .del{ background:none; border:none; color: var(--muted); font-size: 16px; cursor:pointer; opacity: 0; transition: opacity 0.15s; padding: 4px; }
   .task-row:hover .del{ opacity: 1; }
 
-  /* BOARD VIEW */
   .kanban{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 20px 24px 90px; }
   .kcol{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; min-height: 120px; }
   .kcol-label{ font-size: 11px; letter-spacing: 0.05em; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 12px; text-transform: uppercase; }
@@ -186,7 +185,6 @@
   .kcard-badge.urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
   .kcard-badge.high{ background: #F7E2C0; color: var(--mark-high-ink); }
 
-  /* CALENDAR VIEW */
   .cal-strip{ display:flex; gap: 8px; padding: 20px 24px 4px; overflow-x:auto; }
   .cal-day{
     flex-shrink:0; width: 74px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
@@ -227,7 +225,8 @@
   <div class="wordmark serif">Peremember</div>
   <div class="tagline serif">Remember before you forget.</div>
   <div class="top-right hidden" id="topRight">
-    <span class="kbd-hint"><kbd>⌘</kbd><kbd>K</kbd> quick add</span>
+    <span class="kbd-hint"><span class="live-dot" id="liveDot"></span>Live</span>
+    <button id="notifyBtn">🔔 Reminders</button>
     <button id="signOutBtn">Sign out</button>
   </div>
 </header>
@@ -307,6 +306,12 @@
   var SUPABASE_URL = 'https://hztmvvdamlbltimtetkz.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_vaGpd2a6v9GECEYsknlu2g_32YBehai';
   var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(err){ console.log('SW registration failed', err); });
+    });
+  }
 
   var DAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
   function startOfDay(d){ var x = new Date(d); x.setHours(0,0,0,0); return x; }
@@ -438,6 +443,7 @@
   var authSwitchText = document.getElementById('authSwitchText');
   var authSwitchBtn = document.getElementById('authSwitchBtn');
   var signOutBtn = document.getElementById('signOutBtn');
+  var notifyBtn = document.getElementById('notifyBtn');
   var mode = 'signin';
 
   function setMode(m){
@@ -521,6 +527,86 @@
   var selectedCalDate = startOfDay(new Date());
   var tasks = [];
   var currentUserId = null;
+  var realtimeChannel = null;
+  var notifiedIds = {};
+  var notifyInterval = null;
+
+  function loadNotifiedIds(){
+    try{ notifiedIds = JSON.parse(localStorage.getItem('peremember_notified') || '{}'); }catch(e){ notifiedIds = {}; }
+  }
+  function saveNotifiedIds(){
+    localStorage.setItem('peremember_notified', JSON.stringify(notifiedIds));
+  }
+  function updateNotifyBtn(){
+    var enabled = ('Notification' in window) && localStorage.getItem('peremember_reminders') === 'on' && Notification.permission === 'granted';
+    notifyBtn.classList.toggle('on', enabled);
+    notifyBtn.textContent = enabled ? '🔔 Reminders on' : '🔔 Reminders';
+  }
+  function showBrowserNotification(title, body, tag){
+    if(!('Notification' in window) || Notification.permission !== 'granted') return;
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.ready.then(function(reg){
+        reg.showNotification(title, { body: body, icon: 'icon-192.png', badge: 'icon-192.png', tag: tag });
+      }).catch(function(){
+        new Notification(title, { body: body, icon: 'icon-192.png' });
+      });
+    } else {
+      new Notification(title, { body: body, icon: 'icon-192.png' });
+    }
+  }
+  function checkDueNotifications(){
+    if(!('Notification' in window)) return;
+    if(localStorage.getItem('peremember_reminders') !== 'on') return;
+    if(Notification.permission !== 'granted') return;
+    var now = new Date().getTime();
+    tasks.forEach(function(t){
+      if(t.completed || !t.due_date || notifiedIds[t.id]) return;
+      var due = new Date(t.due_date).getTime();
+      var diff = due - now;
+      if(diff <= 15*60*1000 && diff >= -5*60*1000){
+        showBrowserNotification('Peremember', t.title + (t.due ? ' — due ' + t.due : ''), String(t.id));
+        notifiedIds[t.id] = true;
+        saveNotifiedIds();
+      }
+    });
+  }
+  notifyBtn.addEventListener('click', async function(){
+    if(!('Notification' in window)){
+      alert('This browser does not support notifications.');
+      return;
+    }
+    if(localStorage.getItem('peremember_reminders') === 'on'){
+      localStorage.setItem('peremember_reminders', 'off');
+      updateNotifyBtn();
+      return;
+    }
+    var perm = await Notification.requestPermission();
+    if(perm === 'granted'){
+      localStorage.setItem('peremember_reminders', 'on');
+      showBrowserNotification('Peremember', 'Reminders are on. We\u2019ll nudge you when a task is due.', 'welcome');
+    }
+    updateNotifyBtn();
+  });
+
+  function subscribeRealtime(){
+    if(realtimeChannel){ supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
+    realtimeChannel = supabase.channel('tasks-changes-' + currentUserId)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks', filter: 'user_id=eq.' + currentUserId }, function(payload){
+        if(payload.eventType === 'INSERT'){
+          if(!tasks.some(function(t){ return String(t.id) === String(payload.new.id); })){
+            tasks.unshift(payload.new);
+          }
+        } else if(payload.eventType === 'UPDATE'){
+          var idx = tasks.findIndex(function(t){ return String(t.id) === String(payload.new.id); });
+          if(idx !== -1) tasks[idx] = payload.new;
+        } else if(payload.eventType === 'DELETE'){
+          tasks = tasks.filter(function(t){ return String(t.id) !== String(payload.old.id); });
+        }
+        renderAll();
+        checkDueNotifications();
+      })
+      .subscribe();
+  }
 
   function updatePreview(){
     var val = input.value;
@@ -546,6 +632,7 @@
     if(res.error){ console.error(res.error); return; }
     tasks = res.data || [];
     renderAll();
+    checkDueNotifications();
   }
 
   async function addTask(){
@@ -558,7 +645,9 @@
       due_date: parsed.dueDate, priority: parsed.priority, completed: false
     }).select();
     if(res.error){ console.error(res.error); addBtn.disabled = false; return; }
-    tasks.unshift(res.data[0]);
+    if(!tasks.some(function(t){ return String(t.id) === String(res.data[0].id); })){
+      tasks.unshift(res.data[0]);
+    }
     input.value = '';
     updatePreview();
     renderAll();
@@ -749,7 +838,7 @@
       row.classList.add('removing');
       lastDeleted = { task: tasks[idx], index: idx };
       setTimeout(function(){
-        tasks.splice(idx, 1);
+        tasks = tasks.filter(function(t){ return String(t.id) !== id; });
         renderAll();
       }, 200);
       showToast('Task deleted');
@@ -826,7 +915,9 @@
       priority: t.priority, completed: t.completed, completed_at: t.completed_at || null
     }).select();
     if(!res.error){
-      tasks.splice(lastDeleted.index, 0, res.data[0]);
+      if(!tasks.some(function(x){ return String(x.id) === String(res.data[0].id); })){
+        tasks.splice(lastDeleted.index, 0, res.data[0]);
+      }
       renderAll();
     }
     toast.classList.remove('show');
@@ -843,13 +934,19 @@
     }
   });
 
+  loadNotifiedIds();
+
   supabase.auth.onAuthStateChange(function(event, session){
     if(session && session.user){
       currentUserId = session.user.id;
       authScreen.classList.add('hidden');
       appEl.classList.remove('hidden');
       topRight.classList.remove('hidden');
+      updateNotifyBtn();
       fetchTasks();
+      subscribeRealtime();
+      if(notifyInterval) clearInterval(notifyInterval);
+      notifyInterval = setInterval(checkDueNotifications, 60000);
     } else {
       currentUserId = null;
       tasks = [];
@@ -858,6 +955,8 @@
       topRight.classList.add('hidden');
       authEmail.value = '';
       authPassword.value = '';
+      if(realtimeChannel){ supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
+      if(notifyInterval){ clearInterval(notifyInterval); notifyInterval = null; }
     }
   });
 
