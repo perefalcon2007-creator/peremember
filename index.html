@@ -26,8 +26,16 @@
     --green: #4F7A5C;
     --red: #C1523B;
   }
+  :root.dark-theme{
+    --paper: #1B1712;
+    --surface: #241F19;
+    --ink: #F2EBDD;
+    --muted: #A79C89;
+    --rule: #3A332B;
+  }
   *{ margin:0; padding:0; box-sizing:border-box; }
   body{
+    transition: background-color 0.25s ease, color 0.25s ease;
     background: var(--paper); color: var(--ink); font-family: 'Public Sans', sans-serif;
     line-height: 1.5; -webkit-font-smoothing: antialiased;
   }
@@ -44,12 +52,34 @@
     display:flex; align-items:center; gap: 10px;
   }
   .kbd-hint{ display:flex; align-items:center; gap: 5px; }
-  #signOutBtn, #notifyBtn{
+  #notifyBtn, #themeToggle{
     background:none; border: 1px solid var(--rule); color: var(--muted); font-size: 12px;
     padding: 5px 11px; border-radius: 20px; cursor:pointer; font-family: inherit;
   }
+  #themeToggle{ padding: 5px 9px; font-size: 13px; line-height:1; }
   #notifyBtn.on{ background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  #signOutBtn:hover{ border-color: var(--ink); color: var(--ink); }
+  #themeToggle:hover{ border-color: var(--ink); }
+
+  .avatar-wrap{ position:relative; }
+  #avatarBtn{
+    width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--paper);
+    border: none; font-family: 'Fraunces', serif; font-size: 12.5px; font-weight: 600;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .avatar-menu{
+    position:absolute; top: 34px; right: 0; background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 10px; min-width: 190px; box-shadow: 0 12px 30px -10px rgba(0,0,0,0.25);
+    padding: 6px; z-index: 50;
+  }
+  .avatar-email{
+    font-size: 11.5px; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--rule);
+    margin-bottom: 4px; word-break: break-all;
+  }
+  .avatar-menu button{
+    display:block; width:100%; text-align:left; background:none; border:none; color: var(--ink);
+    font-size: 13px; padding: 8px 10px; border-radius: 6px; cursor:pointer; font-family: inherit;
+  }
+  .avatar-menu button:hover{ background: var(--paper); }
   .live-dot{
     width: 6px; height: 6px; border-radius: 50%; background: var(--green); display:inline-block;
     margin-right: 5px; box-shadow: 0 0 0 0 rgba(79,122,94,0.5); animation: livepulse 2s infinite;
@@ -292,7 +322,7 @@
     .top-right{
       top: 18px; right: 16px; flex-direction: column; align-items: flex-end; gap: 6px;
     }
-    #signOutBtn, #notifyBtn{ font-size: 10.5px; padding: 4px 9px; }
+    #notifyBtn, #themeToggle{ font-size: 10.5px; padding: 4px 9px; }
   }
   :focus-visible{ outline: 2px solid var(--green); outline-offset: 2px; }
 </style>
@@ -305,7 +335,14 @@
   <div class="top-right hidden" id="topRight">
     <span class="kbd-hint"><span class="live-dot" id="liveDot"></span>Live</span>
     <button id="notifyBtn">🔔 Reminders</button>
-    <button id="signOutBtn">Sign out</button>
+    <button id="themeToggle" title="Toggle dark mode">🌙</button>
+    <div class="avatar-wrap">
+      <button id="avatarBtn"></button>
+      <div class="avatar-menu hidden" id="avatarMenu">
+        <div class="avatar-email" id="avatarEmail"></div>
+        <button id="signOutBtn">Sign out</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -582,6 +619,34 @@
     el.addEventListener('keydown', function(e){ if(e.key === 'Enter') authSubmit.click(); });
   });
   signOutBtn.addEventListener('click', async function(){ await supabase.auth.signOut(); });
+
+  // ---- Theme toggle ----
+  var themeToggle = document.getElementById('themeToggle');
+  function applyTheme(theme){
+    document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+  applyTheme(localStorage.getItem('peremember_theme') === 'dark' ? 'dark' : 'light');
+  themeToggle.addEventListener('click', function(){
+    var isDark = document.documentElement.classList.contains('dark-theme');
+    var next = isDark ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('peremember_theme', next);
+  });
+
+  // ---- Avatar dropdown ----
+  var avatarBtn = document.getElementById('avatarBtn');
+  var avatarMenu = document.getElementById('avatarMenu');
+  var avatarEmail = document.getElementById('avatarEmail');
+  avatarBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    avatarMenu.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function(e){
+    if(!avatarMenu.classList.contains('hidden') && !e.target.closest('.avatar-wrap')){
+      avatarMenu.classList.add('hidden');
+    }
+  });
 
   var input = document.getElementById('taskInput');
   var previewLine = document.getElementById('previewLine');
@@ -1149,6 +1214,9 @@
       authScreen.classList.add('hidden');
       appEl.classList.remove('hidden');
       topRight.classList.remove('hidden');
+      var emailAddr = session.user.email || '';
+      avatarBtn.textContent = emailAddr.charAt(0).toUpperCase();
+      avatarEmail.textContent = emailAddr;
       updateNotifyBtn();
       fetchTasks();
       subscribeRealtime();
@@ -1160,6 +1228,7 @@
       authScreen.classList.remove('hidden');
       appEl.classList.add('hidden');
       topRight.classList.add('hidden');
+      avatarMenu.classList.add('hidden');
       authEmail.value = '';
       authPassword.value = '';
       if(realtimeChannel){ supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
