@@ -20,6 +20,12 @@ self.addEventListener('activate', function(event){
 });
 
 self.addEventListener('fetch', function(event){
+  // Only handle GET requests to our own site — never intercept Supabase
+  // calls, fonts, or the CDN script (those are cross-origin and/or non-GET).
+  if(event.request.method !== 'GET') return;
+  var url = new URL(event.request.url);
+  if(url.origin !== self.location.origin) return;
+
   event.respondWith(
     fetch(event.request).then(function(res){
       var resClone = res.clone();
