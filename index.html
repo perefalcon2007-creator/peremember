@@ -25,22 +25,19 @@
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
   body{
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Public Sans', sans-serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    background: var(--paper); color: var(--ink); font-family: 'Public Sans', sans-serif;
+    line-height: 1.5; -webkit-font-smoothing: antialiased;
   }
   .serif{ font-family: 'Fraunces', serif; }
   .mono{ font-family: 'IBM Plex Mono', monospace; }
-  .wrap{ max-width: 640px; margin: 0 auto; padding: 0 24px; }
+  .wrap{ max-width: 760px; margin: 0 auto; padding: 0 24px; }
   .hidden{ display:none !important; }
 
-  header{ padding: 48px 24px 10px; text-align:center; position:relative; }
+  header{ padding: 40px 24px 6px; text-align:center; position:relative; }
   .wordmark{ font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
   .tagline{ font-size: 14px; color: var(--muted); font-style: italic; margin-top: 4px; }
   .top-right{
-    position:absolute; top: 50px; right: 24px; font-size: 12px; color: var(--muted);
+    position:absolute; top: 42px; right: 24px; font-size: 12px; color: var(--muted);
     display:flex; align-items:center; gap: 10px;
   }
   .kbd-hint{ display:flex; align-items:center; gap: 5px; }
@@ -54,12 +51,9 @@
   }
   #signOutBtn:hover{ border-color: var(--ink); color: var(--ink); }
 
-  /* AUTH SCREEN */
+  /* AUTH */
   .auth-shell{ max-width: 380px; margin: 60px auto; padding: 0 24px; }
-  .auth-card{
-    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
-    padding: 28px 26px;
-  }
+  .auth-card{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 28px 26px; }
   .auth-title{ font-size: 20px; font-weight: 600; margin-bottom: 6px; }
   .auth-sub{ font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
   .field-label{ font-size: 12.5px; color: var(--muted); margin-bottom: 6px; display:block; }
@@ -70,49 +64,42 @@
   .field:focus{ border-color: var(--green); }
   .auth-btn{
     width: 100%; background: var(--ink); color: var(--paper); border: none;
-    font-size: 14px; font-weight: 500; padding: 11px; border-radius: 8px;
-    cursor: pointer; font-family: inherit; margin-top: 4px;
+    font-size: 14px; font-weight: 500; padding: 11px; border-radius: 8px; cursor: pointer;
+    font-family: inherit; margin-top: 4px;
   }
-  .auth-btn:hover{ opacity: 0.9; }
   .auth-btn:disabled{ opacity: 0.5; cursor: default; }
   .auth-switch{ text-align:center; font-size: 13px; color: var(--muted); margin-top: 16px; }
-  .auth-switch button{
-    background:none; border:none; color: var(--green); font-weight: 500; cursor:pointer;
-    font-family: inherit; font-size: 13px; padding: 0;
-  }
-  .auth-error{
-    background: #FBE6E1; color: var(--red); font-size: 12.5px; padding: 9px 12px;
-    border-radius: 6px; margin-bottom: 14px;
-  }
-  .auth-note{
-    background: #FBF0CB; color: var(--mark-date-ink); font-size: 12.5px; padding: 9px 12px;
-    border-radius: 6px; margin-bottom: 14px;
-  }
+  .auth-switch button{ background:none; border:none; color: var(--green); font-weight: 500; cursor:pointer; font-family: inherit; font-size: 13px; padding: 0; }
+  .auth-error{ background: #FBE6E1; color: var(--red); font-size: 12.5px; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; }
+  .auth-note{ background: #FBF0CB; color: var(--mark-date-ink); font-size: 12.5px; padding: 9px 12px; border-radius: 6px; margin-bottom: 14px; }
 
-  /* APP */
-  .composer{ padding: 28px 24px 8px; }
-  .input-shell{
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    padding: 18px 20px;
+  /* STATS BAR */
+  .stats{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule); border-radius: 12px;
+    overflow:hidden; margin: 24px 24px 0;
   }
+  .stat{ background: var(--surface); padding: 16px 14px; text-align:center; }
+  .stat-num{ font-size: 22px; font-weight: 600; font-family: 'Fraunces', serif; }
+  .stat-num.streak{ color: var(--mark-priority-ink); }
+  .stat-label{ font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; margin-top: 2px; text-transform: uppercase; }
+
+  /* COMPOSER */
+  .composer{ padding: 22px 24px 8px; }
+  .input-shell{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; }
   input#taskInput{
     width: 100%; border: none; outline: none; background: transparent;
     font-family: 'Fraunces', serif; font-size: 19px; color: var(--ink);
   }
   input#taskInput::placeholder{ color: #B9B2A2; }
-
   .preview-line{
-    min-height: 22px; margin-top: 12px; padding-top: 12px;
-    border-top: 1px dashed var(--rule);
+    min-height: 22px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--rule);
     font-size: 15px; color: var(--muted); display:none;
   }
   .preview-line.show{ display:block; }
   mark.date{ background: var(--mark-date); color: var(--mark-date-ink); padding: 1px 3px; border-radius: 3px; }
   mark.priority{ background: var(--mark-priority); color: var(--mark-priority-ink); padding: 1px 3px; border-radius: 3px; }
   mark.high{ background: var(--mark-high); color: var(--mark-high-ink); padding: 1px 3px; border-radius: 3px; }
-
   .chips{ display:flex; gap: 8px; margin-top: 14px; flex-wrap:wrap; }
   .chip{ font-size: 12px; padding: 5px 11px; border-radius: 20px; display:flex; align-items:center; gap: 6px; }
   .chip .k{ color: var(--muted); }
@@ -120,43 +107,61 @@
   .chip.pr-urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
   .chip.pr-high{ background: #F7E2C0; color: var(--mark-high-ink); }
   .chip.pr-normal{ background: #E9E4D6; color: var(--muted); }
-
   .hint-row{ display:flex; justify-content:space-between; align-items:center; margin-top: 16px; }
   .hint{ font-size: 12.5px; color: var(--muted); }
   .hint b{ color: var(--ink); font-weight: 500; }
   button#addBtn{
-    background: var(--ink); color: var(--paper); border: none;
-    font-size: 13.5px; font-weight: 500; padding: 10px 20px; border-radius: 8px;
-    cursor: pointer; font-family: inherit;
+    background: var(--ink); color: var(--paper); border: none; font-size: 13.5px; font-weight: 500;
+    padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: inherit;
   }
-  button#addBtn:hover{ opacity: 0.9; }
   button#addBtn:disabled{ opacity: 0.35; cursor: default; }
 
-  .filter-row{ display:flex; gap: 8px; padding: 22px 24px 0; flex-wrap: wrap; }
+  /* CONTROLS ROW: search + view toggle + filters */
+  .controls{ padding: 22px 24px 0; display:flex; flex-direction:column; gap: 12px; }
+  .controls-top{ display:flex; gap: 10px; align-items:center; }
+  .search-shell{
+    flex:1; display:flex; align-items:center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 20px; padding: 8px 14px;
+  }
+  .search-shell svg{ flex-shrink:0; opacity: 0.5; }
+  #searchInput{ border:none; outline:none; background:transparent; font-family: inherit; font-size: 13.5px; width:100%; color: var(--ink); }
+  #searchInput::placeholder{ color: #B9B2A2; }
+  .view-toggle{ display:flex; background: var(--surface); border: 1px solid var(--rule); border-radius: 20px; padding: 3px; flex-shrink:0; }
+  .view-btn{
+    background:none; border:none; font-size: 12px; padding: 6px 13px; border-radius: 16px; cursor:pointer;
+    font-family: inherit; color: var(--muted);
+  }
+  .view-btn.active{ background: var(--ink); color: var(--paper); }
+  .filter-row{ display:flex; gap: 8px; flex-wrap: wrap; }
   .filter-btn{
     font-size: 12.5px; padding: 6px 13px; border-radius: 20px; border: 1px solid var(--rule);
     background: var(--surface); color: var(--muted); cursor:pointer; font-family: inherit;
   }
   .filter-btn.active{ background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
+  /* LIST VIEW */
   .board{ padding: 20px 24px 90px; }
   .group{ margin-bottom: 6px; }
-  .group-label{
-    font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted);
-    margin: 26px 0 10px; font-family: 'IBM Plex Mono', monospace;
-  }
+  .group-label{ font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted); margin: 26px 0 10px; font-family: 'IBM Plex Mono', monospace; }
   .group:first-child .group-label{ margin-top: 0; }
-
-  .task-row{ display:flex; align-items:center; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--rule); }
-  .check{
-    width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid #C9C1AE;
-    flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    background: var(--surface);
+  .task-row{
+    display:flex; align-items:center; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--rule);
+    animation: rowIn 0.28s ease;
   }
+  @keyframes rowIn{ from{ opacity:0; transform: translateY(-6px); } to{ opacity:1; transform: translateY(0); } }
+  .task-row.removing{ animation: rowOut 0.22s ease forwards; }
+  @keyframes rowOut{ to{ opacity:0; transform: translateX(14px); height:0; padding-top:0; padding-bottom:0; margin:0; border:none; } }
+  .check{
+    width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid #C9C1AE; flex-shrink:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; background: var(--surface); transition: transform 0.15s;
+  }
+  .check.pulse{ animation: pulse 0.35s ease; }
+  @keyframes pulse{ 50%{ transform: scale(1.35); } }
   .check.done{ background: var(--green); border-color: var(--green); }
   .check.done::after{ content:'✓'; color: var(--surface); font-size: 11px; }
   .task-title{ flex:1; font-size: 15.5px; cursor: text; }
   .task-title.done{ text-decoration: line-through; color: var(--muted); }
+  .task-title mark{ background: var(--mark-date); padding: 0 2px; border-radius: 2px; }
   .task-title-edit{
     flex:1; font-size: 15.5px; font-family: inherit; border: none; outline: none;
     background: var(--surface); border-bottom: 1px solid var(--green); padding: 2px 0;
@@ -165,11 +170,35 @@
   .badge{ font-size: 11px; padding: 3px 9px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; }
   .badge.urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
   .badge.high{ background: #F7E2C0; color: var(--mark-high-ink); }
-  .del{
-    background:none; border:none; color: var(--muted); font-size: 16px;
-    cursor:pointer; opacity: 0; transition: opacity 0.15s; padding: 4px;
-  }
+  .del{ background:none; border:none; color: var(--muted); font-size: 16px; cursor:pointer; opacity: 0; transition: opacity 0.15s; padding: 4px; }
   .task-row:hover .del{ opacity: 1; }
+
+  /* BOARD VIEW */
+  .kanban{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 20px 24px 90px; }
+  .kcol{ background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; min-height: 120px; }
+  .kcol-label{ font-size: 11px; letter-spacing: 0.05em; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 12px; text-transform: uppercase; }
+  .kcard{
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px;
+    margin-bottom: 8px; font-size: 13.5px; cursor:pointer; animation: rowIn 0.28s ease;
+  }
+  .kcard.done{ opacity: 0.5; text-decoration: line-through; }
+  .kcard-badge{ display:inline-block; margin-top: 6px; font-size: 10px; padding: 2px 7px; border-radius: 12px; font-family: 'IBM Plex Mono', monospace; }
+  .kcard-badge.urgent{ background: #F9D8CC; color: var(--mark-priority-ink); }
+  .kcard-badge.high{ background: #F7E2C0; color: var(--mark-high-ink); }
+
+  /* CALENDAR VIEW */
+  .cal-strip{ display:flex; gap: 8px; padding: 20px 24px 4px; overflow-x:auto; }
+  .cal-day{
+    flex-shrink:0; width: 74px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 10px 8px; text-align:center; cursor:pointer;
+  }
+  .cal-day.selected{ background: var(--ink); border-color: var(--ink); }
+  .cal-day.selected .cal-dow, .cal-day.selected .cal-num{ color: var(--paper); }
+  .cal-dow{ font-size: 10.5px; color: var(--muted); text-transform:uppercase; }
+  .cal-num{ font-size: 17px; font-weight: 600; font-family: 'Fraunces', serif; margin: 2px 0; }
+  .cal-dot{ width: 5px; height: 5px; border-radius: 50%; background: var(--mark-priority); margin: 2px auto 0; visibility:hidden; }
+  .cal-dot.show{ visibility:visible; }
+  .cal-day.selected .cal-dot{ background: var(--mark-date); }
 
   .empty{ text-align:center; padding: 40px 20px; color: var(--muted); }
   .empty .serif{ font-size: 17px; color: var(--ink); margin-bottom: 6px; }
@@ -177,14 +206,15 @@
 
   .toast{
     position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--ink); color: var(--paper); font-size: 13.5px;
-    padding: 12px 18px; border-radius: 8px; display:flex; align-items:center; gap: 14px;
-    opacity: 0; pointer-events:none; transition: all 0.25s ease;
+    background: var(--ink); color: var(--paper); font-size: 13.5px; padding: 12px 18px; border-radius: 8px;
+    display:flex; align-items:center; gap: 14px; opacity: 0; pointer-events:none; transition: all 0.25s ease;
   }
   .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); pointer-events:auto; }
   .toast button{ background:none; border:none; color: var(--mark-date); font-weight:600; font-size:13px; cursor:pointer; font-family: inherit; }
 
-  @media (max-width: 480px){
+  @media (max-width: 640px){
+    .stats{ grid-template-columns: repeat(2, 1fr); }
+    .kanban{ grid-template-columns: 1fr 1fr; }
     .task-meta{ flex-direction: column-reverse; align-items: flex-end; gap: 4px; }
     .kbd-hint{ display:none; }
   }
@@ -221,6 +251,14 @@
 </div>
 
 <div id="app" class="wrap hidden">
+
+  <div class="stats" id="statsBar">
+    <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="statToday">0</div><div class="stat-label">Done today</div></div>
+    <div class="stat"><div class="stat-num streak" id="statStreak">0</div><div class="stat-label">Day streak</div></div>
+    <div class="stat"><div class="stat-num" id="statRate">0%</div><div class="stat-label">Completion</div></div>
+  </div>
+
   <div class="composer">
     <div class="input-shell">
       <input id="taskInput" type="text" placeholder="finish client deck before Thursday, it's urgent" autocomplete="off">
@@ -233,14 +271,30 @@
     </div>
   </div>
 
-  <div class="filter-row" id="filterRow">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="Urgent">Urgent</button>
-    <button class="filter-btn" data-filter="High">High</button>
-    <button class="filter-btn" data-filter="Normal">Normal</button>
+  <div class="controls">
+    <div class="controls-top">
+      <div class="search-shell">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Search tasks...">
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="list">List</button>
+        <button class="view-btn" data-view="board">Board</button>
+        <button class="view-btn" data-view="calendar">Calendar</button>
+      </div>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="Urgent">Urgent</button>
+      <button class="filter-btn" data-filter="High">High</button>
+      <button class="filter-btn" data-filter="Normal">Normal</button>
+    </div>
   </div>
 
+  <div id="calStrip" class="cal-strip hidden"></div>
+
   <div class="board" id="board"></div>
+  <div class="kanban hidden" id="kanban"></div>
 </div>
 
 <div class="toast" id="toast">
@@ -271,6 +325,7 @@
     return hh + ':' + mm + ' ' + period;
   }
   function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+  function sameDay(a,b){ return startOfDay(a).getTime() === startOfDay(b).getTime(); }
 
   function parseTask(raw){
     var text = raw.trim();
@@ -344,11 +399,8 @@
       for(var i=mm.start;i<mm.end;i++) cleanChars[i] = '\u0000';
     });
     var title = cleanChars.join('')
-      .replace(/\u0000/g,' ')
-      .replace(/,/g,' ')
-      .replace(/\s{2,}/g,' ')
-      .replace(/^\s+|\s+$/g,'')
-      .replace(/\s+([.!?])$/,'$1');
+      .replace(/\u0000/g,' ').replace(/,/g,' ').replace(/\s{2,}/g,' ')
+      .replace(/^\s+|\s+$/g,'').replace(/\s+([.!?])$/,'$1');
     title = title.charAt(0).toUpperCase() + title.slice(1);
 
     return { title: title, due: dueLabel, dueDate: dueDate ? dueDate.toISOString() : null, priority: priority, matches: matches, rawText: text };
@@ -366,6 +418,12 @@
     return out;
   }
   function escapeHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function highlightSearch(text, q){
+    if(!q) return escapeHTML(text);
+    var idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if(idx === -1) return escapeHTML(text);
+    return escapeHTML(text.slice(0,idx)) + '<mark>' + escapeHTML(text.slice(idx,idx+q.length)) + '</mark>' + escapeHTML(text.slice(idx+q.length));
+  }
 
   var authScreen = document.getElementById('authScreen');
   var appEl = document.getElementById('app');
@@ -432,27 +490,35 @@
     }
     authSubmit.disabled = false;
   });
-
   [authEmail, authPassword].forEach(function(el){
     el.addEventListener('keydown', function(e){ if(e.key === 'Enter') authSubmit.click(); });
   });
-
-  signOutBtn.addEventListener('click', async function(){
-    await supabase.auth.signOut();
-  });
+  signOutBtn.addEventListener('click', async function(){ await supabase.auth.signOut(); });
 
   var input = document.getElementById('taskInput');
   var previewLine = document.getElementById('previewLine');
   var chipsEl = document.getElementById('chips');
   var addBtn = document.getElementById('addBtn');
   var board = document.getElementById('board');
+  var kanban = document.getElementById('kanban');
+  var calStrip = document.getElementById('calStrip');
   var toast = document.getElementById('toast');
   var toastMsg = document.getElementById('toastMsg');
   var undoBtn = document.getElementById('undoBtn');
   var filterRow = document.getElementById('filterRow');
+  var searchInput = document.getElementById('searchInput');
+  var viewButtons = document.querySelectorAll('.view-btn');
+  var statTotal = document.getElementById('statTotal');
+  var statToday = document.getElementById('statToday');
+  var statStreak = document.getElementById('statStreak');
+  var statRate = document.getElementById('statRate');
+
   var lastDeleted = null;
   var toastTimer = null;
   var currentFilter = 'all';
+  var currentView = 'list';
+  var searchQuery = '';
+  var selectedCalDate = startOfDay(new Date());
   var tasks = [];
   var currentUserId = null;
 
@@ -469,9 +535,7 @@
     previewLine.classList.add('show');
     addBtn.disabled = false;
     var chips = '';
-    if(parsed.due){
-      chips += '<span class="chip due"><span class="k">Due</span> ' + escapeHTML(parsed.due) + '</span>';
-    }
+    if(parsed.due) chips += '<span class="chip due"><span class="k">Due</span> ' + escapeHTML(parsed.due) + '</span>';
     var prClass = parsed.priority === 'Urgent' ? 'pr-urgent' : (parsed.priority === 'High' ? 'pr-high' : 'pr-normal');
     chips += '<span class="chip ' + prClass + '"><span class="k">Priority</span> ' + parsed.priority + '</span>';
     chipsEl.innerHTML = chips;
@@ -481,7 +545,7 @@
     var res = await supabase.from('tasks').select('*').order('created_at', { ascending: false });
     if(res.error){ console.error(res.error); return; }
     tasks = res.data || [];
-    renderBoard();
+    renderAll();
   }
 
   async function addTask(){
@@ -490,18 +554,14 @@
     var parsed = parseTask(val);
     addBtn.disabled = true;
     var res = await supabase.from('tasks').insert({
-      user_id: currentUserId,
-      title: parsed.title || val,
-      due: parsed.due,
-      due_date: parsed.dueDate,
-      priority: parsed.priority,
-      completed: false
+      user_id: currentUserId, title: parsed.title || val, due: parsed.due,
+      due_date: parsed.dueDate, priority: parsed.priority, completed: false
     }).select();
     if(res.error){ console.error(res.error); addBtn.disabled = false; return; }
     tasks.unshift(res.data[0]);
     input.value = '';
     updatePreview();
-    renderBoard();
+    renderAll();
     input.focus();
   }
 
@@ -517,13 +577,46 @@
     return 'Later';
   }
 
-  function renderBoard(){
+  function getFilteredTasks(){
     var active = currentFilter === 'all' ? tasks : tasks.filter(function(t){ return t.priority === currentFilter; });
+    if(searchQuery){
+      active = active.filter(function(t){ return t.title.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1; });
+    }
+    return active;
+  }
+
+  function renderStats(){
+    var total = tasks.length;
+    var todayStr = startOfDay(new Date()).toDateString();
+    var doneToday = tasks.filter(function(t){
+      return t.completed && t.completed_at && startOfDay(new Date(t.completed_at)).toDateString() === todayStr;
+    }).length;
+    var doneCount = tasks.filter(function(t){ return t.completed; }).length;
+    var rate = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+    var completedDates = {};
+    tasks.forEach(function(t){
+      if(t.completed && t.completed_at){
+        completedDates[startOfDay(new Date(t.completed_at)).toDateString()] = true;
+      }
+    });
+    var streak = 0;
+    var cursor = startOfDay(new Date());
+    while(completedDates[cursor.toDateString()]){
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    statTotal.textContent = total;
+    statToday.textContent = doneToday;
+    statStreak.textContent = streak;
+    statRate.textContent = rate + '%';
+  }
+
+  function renderList(){
+    var active = getFilteredTasks();
     if(active.length === 0){
-      var msg = currentFilter === 'all'
-        ? '<div class="empty"><div class="serif">Nothing yet.</div><p>Type the first thing you don\u2019t want to forget.</p></div>'
-        : '<div class="empty"><div class="serif">No ' + currentFilter.toLowerCase() + ' tasks.</div><p>Switch filters or add a new one.</p></div>';
-      board.innerHTML = msg;
+      board.innerHTML = '<div class="empty"><div class="serif">Nothing here.</div><p>Type a task above, or adjust your filters.</p></div>';
       return;
     }
     var order = ['Today','Tomorrow','This week','Later','No date'];
@@ -543,13 +636,101 @@
         else if(t.priority === 'High') badge = '<span class="badge high">high</span>';
         html += '<div class="task-row" data-id="' + t.id + '">' +
           '<div class="check' + (t.completed ? ' done' : '') + '" data-action="toggle"></div>' +
-          '<div class="task-title' + (t.completed ? ' done' : '') + '" data-action="edit">' + escapeHTML(t.title) + '</div>' +
+          '<div class="task-title' + (t.completed ? ' done' : '') + '" data-action="edit">' + highlightSearch(t.title, searchQuery) + '</div>' +
           '<div class="task-meta">' + badge + '<button class="del" data-action="delete" aria-label="Delete task">\u00d7</button></div>' +
         '</div>';
       });
       html += '</div>';
     });
     board.innerHTML = html;
+  }
+
+  function renderKanban(){
+    var active = getFilteredTasks();
+    var cols = ['Today','Tomorrow','This week','Later'];
+    var byCol = { 'Today':[], 'Tomorrow':[], 'This week':[], 'Later':[] };
+    active.forEach(function(t){
+      var g = groupLabelFor(t);
+      if(g === 'No date') g = 'Later';
+      byCol[g].push(t);
+    });
+    var html = '';
+    cols.forEach(function(c){
+      html += '<div class="kcol"><div class="kcol-label">' + c + ' \u00b7 ' + byCol[c].length + '</div>';
+      if(byCol[c].length === 0) html += '<div style="font-size:12px;color:var(--muted);">Nothing here</div>';
+      byCol[c].forEach(function(t){
+        var badge = '';
+        if(t.priority === 'Urgent') badge = '<span class="kcard-badge urgent">urgent</span>';
+        else if(t.priority === 'High') badge = '<span class="kcard-badge high">high</span>';
+        html += '<div class="kcard' + (t.completed ? ' done' : '') + '" data-id="' + t.id + '" data-action="toggle">' +
+          escapeHTML(t.title) + (badge ? '<br>' + badge : '') + '</div>';
+      });
+      html += '</div>';
+    });
+    kanban.innerHTML = html;
+  }
+
+  function renderCalStrip(){
+    var html = '';
+    var today = startOfDay(new Date());
+    for(var i = -1; i <= 6; i++){
+      var d = new Date(today); d.setDate(d.getDate() + i);
+      var hasTask = tasks.some(function(t){ return t.due_date && sameDay(new Date(t.due_date), d); });
+      var isSelected = sameDay(d, selectedCalDate);
+      html += '<div class="cal-day' + (isSelected ? ' selected' : '') + '" data-date="' + d.toISOString() + '">' +
+        '<div class="cal-dow mono">' + d.toLocaleDateString('en-US',{weekday:'short'}) + '</div>' +
+        '<div class="cal-num">' + d.getDate() + '</div>' +
+        '<div class="cal-dot' + (hasTask ? ' show' : '') + '"></div>' +
+      '</div>';
+    }
+    calStrip.innerHTML = html;
+  }
+
+  function renderCalendarList(){
+    var active = getFilteredTasks().filter(function(t){ return t.due_date && sameDay(new Date(t.due_date), selectedCalDate); });
+    if(active.length === 0){
+      board.innerHTML = '<div class="empty"><div class="serif">Nothing on this day.</div><p>Pick another date or add a task.</p></div>';
+      return;
+    }
+    var html = '<div class="group"><div class="group-label">' + active.length + ' TASK' + (active.length > 1 ? 'S' : '') + '</div>';
+    active.forEach(function(t){
+      var badge = '';
+      if(t.priority === 'Urgent') badge = '<span class="badge urgent">urgent</span>';
+      else if(t.priority === 'High') badge = '<span class="badge high">high</span>';
+      html += '<div class="task-row" data-id="' + t.id + '">' +
+        '<div class="check' + (t.completed ? ' done' : '') + '" data-action="toggle"></div>' +
+        '<div class="task-title' + (t.completed ? ' done' : '') + '" data-action="edit">' + escapeHTML(t.title) + '</div>' +
+        '<div class="task-meta">' + badge + '<button class="del" data-action="delete" aria-label="Delete task">\u00d7</button></div>' +
+      '</div>';
+    });
+    html += '</div>';
+    board.innerHTML = html;
+  }
+
+  function renderAll(){
+    renderStats();
+    if(currentView === 'list'){
+      board.classList.remove('hidden'); kanban.classList.add('hidden'); calStrip.classList.add('hidden');
+      renderList();
+    } else if(currentView === 'board'){
+      board.classList.add('hidden'); kanban.classList.remove('hidden'); calStrip.classList.add('hidden');
+      renderKanban();
+    } else {
+      board.classList.remove('hidden'); kanban.classList.add('hidden'); calStrip.classList.remove('hidden');
+      renderCalStrip();
+      renderCalendarList();
+    }
+  }
+
+  async function toggleTask(id){
+    var idx = tasks.findIndex(function(t){ return String(t.id) === String(id); });
+    if(idx === -1) return;
+    var newVal = !tasks[idx].completed;
+    var completedAt = newVal ? new Date().toISOString() : null;
+    tasks[idx].completed = newVal;
+    tasks[idx].completed_at = completedAt;
+    renderAll();
+    await supabase.from('tasks').update({ completed: newVal, completed_at: completedAt }).eq('id', id);
   }
 
   board.addEventListener('click', async function(e){
@@ -562,14 +743,15 @@
     if(idx === -1) return;
 
     if(action === 'toggle'){
-      var newVal = !tasks[idx].completed;
-      tasks[idx].completed = newVal;
-      renderBoard();
-      await supabase.from('tasks').update({ completed: newVal }).eq('id', id);
+      actionEl.classList.add('pulse');
+      await toggleTask(id);
     } else if(action === 'delete'){
+      row.classList.add('removing');
       lastDeleted = { task: tasks[idx], index: idx };
-      tasks.splice(idx, 1);
-      renderBoard();
+      setTimeout(function(){
+        tasks.splice(idx, 1);
+        renderAll();
+      }, 200);
       showToast('Task deleted');
       await supabase.from('tasks').delete().eq('id', id);
     } else if(action === 'edit'){
@@ -581,11 +763,10 @@
       actionEl.replaceWith(editInput);
       editInput.focus();
       editInput.setSelectionRange(editInput.value.length, editInput.value.length);
-
       function commit(){
         var newTitle = editInput.value.trim();
         tasks[idx].title = newTitle || currentTitle;
-        renderBoard();
+        renderAll();
         supabase.from('tasks').update({ title: tasks[idx].title }).eq('id', id);
       }
       editInput.addEventListener('blur', commit);
@@ -596,14 +777,38 @@
     }
   });
 
+  kanban.addEventListener('click', function(e){
+    var card = e.target.closest('.kcard');
+    if(!card) return;
+    toggleTask(card.getAttribute('data-id'));
+  });
+
+  calStrip.addEventListener('click', function(e){
+    var day = e.target.closest('.cal-day');
+    if(!day) return;
+    selectedCalDate = startOfDay(new Date(day.getAttribute('data-date')));
+    renderAll();
+  });
+
   filterRow.addEventListener('click', function(e){
     var btn = e.target.closest('.filter-btn');
     if(!btn) return;
     currentFilter = btn.getAttribute('data-filter');
-    Array.prototype.forEach.call(filterRow.querySelectorAll('.filter-btn'), function(b){
-      b.classList.toggle('active', b === btn);
+    Array.prototype.forEach.call(filterRow.querySelectorAll('.filter-btn'), function(b){ b.classList.toggle('active', b === btn); });
+    renderAll();
+  });
+
+  Array.prototype.forEach.call(viewButtons, function(btn){
+    btn.addEventListener('click', function(){
+      currentView = btn.getAttribute('data-view');
+      Array.prototype.forEach.call(viewButtons, function(b){ b.classList.toggle('active', b === btn); });
+      renderAll();
     });
-    renderBoard();
+  });
+
+  searchInput.addEventListener('input', function(){
+    searchQuery = searchInput.value.trim();
+    renderAll();
   });
 
   function showToast(msg){
@@ -618,11 +823,11 @@
     var t = lastDeleted.task;
     var res = await supabase.from('tasks').insert({
       user_id: t.user_id, title: t.title, due: t.due, due_date: t.due_date,
-      priority: t.priority, completed: t.completed
+      priority: t.priority, completed: t.completed, completed_at: t.completed_at || null
     }).select();
     if(!res.error){
       tasks.splice(lastDeleted.index, 0, res.data[0]);
-      renderBoard();
+      renderAll();
     }
     toast.classList.remove('show');
     lastDeleted = null;
