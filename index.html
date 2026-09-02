@@ -375,7 +375,7 @@
 
   <div class="composer">
     <div class="input-shell">
-      <input id="taskInput" type="text" placeholder="✨ Capture an idea,task or memory " autocomplete="off">
+      <input id="taskInput" type="text" placeholder="finish client deck before Thursday, it's urgent" autocomplete="off">
       <div class="preview-line mono" id="previewLine"></div>
       <div class="chips" id="chips"></div>
       <div class="hint-row">
@@ -674,6 +674,7 @@
   var selectedCalDate = startOfDay(new Date());
   var tasks = [];
   var currentUserId = null;
+  var currentUserEmail = null;
   var realtimeChannel = null;
   var notifiedIds = {};
   var notifyInterval = null;
@@ -788,7 +789,7 @@
     var parsed = parseTask(val);
     addBtn.disabled = true;
     var res = await supabase.from('tasks').insert({
-      user_id: currentUserId, title: parsed.title || val, due: parsed.due,
+      user_id: currentUserId, user_email: currentUserEmail, title: parsed.title || val, due: parsed.due,
       due_date: parsed.dueDate, priority: parsed.priority, completed: false
     }).select();
     if(res.error){ console.error(res.error); addBtn.disabled = false; return; }
@@ -1211,6 +1212,7 @@
   supabase.auth.onAuthStateChange(function(event, session){
     if(session && session.user){
       currentUserId = session.user.id;
+      currentUserEmail = session.user.email || null;
       authScreen.classList.add('hidden');
       appEl.classList.remove('hidden');
       topRight.classList.remove('hidden');
