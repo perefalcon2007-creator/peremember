@@ -1,5 +1,5 @@
 var CACHE_NAME = 'peremember-v1';
-var APP_SHELL = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+var APP_SHELL = ['/', '/index.html', '/app.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', function(event){
   event.waitUntil(
