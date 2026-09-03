@@ -12,6 +12,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#211E19">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -54,7 +55,15 @@
   .nav-cta:hover{ opacity: 0.9; }
   @media (max-width: 700px){ .nav-links{ display:none; } }
 
-  .hero{ padding: 70px 28px 40px; text-align:center; max-width: 720px; margin: 0 auto; }
+  .hero{ padding: 70px 28px 40px; text-align:center; max-width: 720px; margin: 0 auto; position:relative; }
+  .hero-glow{
+    position:absolute; top:-60px; left:50%; transform: translateX(-50%);
+    width: 480px; height: 320px; pointer-events:none; z-index:-1;
+    background: radial-gradient(ellipse at center, rgba(232,120,90,0.14) 0%, rgba(240,199,67,0.10) 45%, transparent 75%);
+    filter: blur(20px);
+  }
+  .reveal{ opacity:0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px; font-size: 12px; letter-spacing: 0.06em;
     color: var(--green); background: #E7EFE9; padding: 6px 14px; border-radius: 20px; margin-bottom: 26px;
@@ -75,16 +84,18 @@
   .demo-card{
     background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 26px 24px;
     box-shadow: 0 40px 80px -35px rgba(33,30,25,0.35);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
-  .demo-line{ font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 16px; }
+  .demo-card:hover{ box-shadow: 0 44px 90px -30px rgba(33,30,25,0.42); transform: translateY(-2px); }
+  .demo-line{ font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 16px; min-height: 26px; }
+  .demo-caret{ display:inline-block; width:2px; height:19px; background: var(--mark-priority); margin-left:2px; vertical-align:-4px; animation: caretBlink 0.9s steps(1) infinite; }
+  @keyframes caretBlink{ 50%{ opacity:0; } }
   .demo-preview{
-    font-size: 15px; color: var(--muted); padding-top: 14px; border-top: 1px dashed var(--rule);
-    opacity: 0; animation: revealDemo 0.6s ease forwards; animation-delay: 1s;
+    font-size: 15px; color: var(--muted); padding-top: 14px; border-top: 1px dashed var(--rule); min-height: 20px;
   }
-  @keyframes revealDemo{ to{ opacity: 1; } }
-  .demo-chips{ display:flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
-    opacity: 0; animation: revealDemo 0.6s ease forwards; animation-delay: 1.3s; }
-  .chip{ font-size: 12px; padding: 5px 11px; border-radius: 20px; }
+  .demo-chips{ display:flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; min-height: 26px; }
+  .chip{ font-size: 12px; padding: 5px 11px; border-radius: 20px; opacity:0; transition: opacity 0.3s ease; }
+  .chip.show{ opacity: 1; }
   .chip.due{ background: #FBF0CB; color: var(--mark-date-ink); }
   .chip.pr{ background: #F9D8CC; color: var(--mark-priority-ink); }
 
@@ -97,7 +108,13 @@
   .section-eyebrow{ font-size: 12px; color: var(--green); letter-spacing: 0.05em; margin-bottom: 10px; }
   .section-title{ font-size: 28px; font-weight: 600; }
   .features{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 14px; overflow:hidden; }
-  .feature{ background: var(--surface); padding: 30px 26px; }
+  .feature{ background: var(--surface); padding: 30px 26px; transition: background 0.2s ease; position:relative; }
+  .feature::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:2px; background: var(--mark-priority);
+    transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease;
+  }
+  .feature:hover::before{ transform: scaleX(1); }
+  .feature:hover{ background: #FFFCF6; }
   .feature-icon{ font-size: 22px; margin-bottom: 16px; }
   .feature h3{ font-size: 16px; font-weight: 600; margin-bottom: 8px; }
   .feature p{ font-size: 13.5px; color: var(--muted); line-height: 1.6; }
@@ -147,6 +164,7 @@
 </nav>
 
 <section class="hero">
+  <div class="hero-glow"></div>
   <div class="eyebrow mono">✨ REMEMBER BEFORE YOU FORGET</div>
   <h1 class="serif">Type it like a thought.<br>Peremember makes it a plan.</h1>
   <p>The task manager that reads natural language. No forms, no dropdowns, no fields to fill in — just say what you need to do.</p>
@@ -158,11 +176,11 @@
 
 <div class="demo-wrap">
   <div class="demo-card">
-    <div class="demo-line mono">finish client deck <mark class="date">before Thursday</mark>, it's <mark class="priority">urgent</mark></div>
-    <div class="demo-preview">Peremember reads this in real time — no submit button, no menus.</div>
-    <div class="demo-chips">
-      <span class="chip due">Due · Before Thursday, 9:00 AM</span>
-      <span class="chip pr">Priority · Urgent</span>
+    <div class="demo-line mono" id="demoLine"></div>
+    <div class="demo-preview" id="demoPreview">Peremember reads this in real time — no submit button, no menus.</div>
+    <div class="demo-chips" id="demoChips">
+      <span class="chip due">Due</span>
+      <span class="chip pr">Priority</span>
     </div>
   </div>
 </div>
@@ -171,7 +189,7 @@
   <div class="logos-label mono">BUILT FOR PEOPLE WHO THINK IN SENTENCES, NOT SPREADSHEETS</div>
 </div>
 
-<section class="section" id="features">
+<section class="section reveal" id="features">
   <div class="section-head">
     <div class="section-eyebrow mono">WHY PEREMEMBER</div>
     <div class="section-title serif">Less structuring. More doing.</div>
@@ -195,7 +213,7 @@
   </div>
 </section>
 
-<section class="section" id="how">
+<section class="section reveal" id="how">
   <div class="split">
     <div class="split-visual">
       <div class="stat-mini">
@@ -220,7 +238,7 @@
   </div>
 </section>
 
-<div class="cta-band">
+<div class="cta-band reveal">
   <h2>Stop organizing. Start remembering.</h2>
   <p>Free to use. No credit card, no setup call.</p>
   <a href="app.html" class="btn-primary">Get started — it's free</a>
@@ -228,8 +246,115 @@
 
 <footer>
   <div class="mono">© 2026 Peremember</div>
-  <div class="mono">Made for people with too many tabs open</div>
+  <div class="mono" id="creditLine">Made by PereFalc</div>
 </footer>
+
+<script>
+(function(){
+  var user = 'perefalcon2007';
+  var domain = 'yahoo.com';
+  var address = user + '@' + domain;
+  var el = document.getElementById('creditLine');
+  el.innerHTML = 'Made by PereFalc \u00b7 <a href="mailto:' + address + '" style="text-decoration:underline;">' + address + '</a>';
+})();
+</script>
+
+<script>
+(function(){
+  // Scroll-reveal for sections
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // Typing demo cycle
+  var examples = [
+    {
+      text: 'finish client deck before Thursday, it\u2019s urgent',
+      marks: [
+        { word: 'before Thursday', cls: 'date' },
+        { word: 'urgent', cls: 'priority' }
+      ],
+      due: 'Before Thursday, 9:00 AM',
+      priority: 'Urgent'
+    },
+    {
+      text: 'call mom tomorrow by 6pm',
+      marks: [
+        { word: 'tomorrow', cls: 'date' },
+        { word: 'by 6pm', cls: 'date' }
+      ],
+      due: 'Tomorrow, 6:00 PM',
+      priority: 'Normal'
+    },
+    {
+      text: 'pay light bill today, important',
+      marks: [
+        { word: 'today', cls: 'date' },
+        { word: 'important', cls: 'high' }
+      ],
+      due: 'Today, 5:00 PM',
+      priority: 'High'
+    }
+  ];
+
+  var demoLine = document.getElementById('demoLine');
+  var demoChips = document.getElementById('demoChips');
+  var exIndex = 0;
+
+  function escapeHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function highlight(text, marks){
+    var html = escapeHTML(text);
+    marks.forEach(function(m){
+      var safe = escapeHTML(m.word);
+      html = html.replace(safe, '<mark class="' + m.cls + '">' + safe + '</mark>');
+    });
+    return html;
+  }
+
+  function typeOut(text, cb){
+    var i = 0;
+    demoLine.innerHTML = '<span class="demo-caret"></span>';
+    var timer = setInterval(function(){
+      i++;
+      demoLine.innerHTML = escapeHTML(text.slice(0, i)) + '<span class="demo-caret"></span>';
+      if(i >= text.length){
+        clearInterval(timer);
+        cb();
+      }
+    }, 32);
+  }
+
+  function runDemo(){
+    var ex = examples[exIndex % examples.length];
+    exIndex++;
+    var chips = demoChips.querySelectorAll('.chip');
+    chips[0].classList.remove('show');
+    chips[1].classList.remove('show');
+
+    typeOut(ex.text, function(){
+      setTimeout(function(){
+        demoLine.innerHTML = highlight(ex.text, ex.marks);
+        chips[0].textContent = 'Due \u00b7 ' + ex.due;
+        chips[1].textContent = 'Priority \u00b7 ' + ex.priority;
+        chips[0].classList.add('show');
+        chips[1].classList.add('show');
+      }, 200);
+      setTimeout(runDemo, 3400);
+    });
+  }
+
+  runDemo();
+})();
+</script>
 
 </body>
 </html>
